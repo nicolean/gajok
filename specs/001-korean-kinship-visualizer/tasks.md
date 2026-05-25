@@ -29,19 +29,19 @@ implementation and testing of each story.
 **Purpose**: Initialize the project scaffolding and tooling. All tasks can begin
 immediately; most are parallelizable.
 
-- [ ] T001 Initialize Vite + TypeScript + React project at repository root: create
+- [x] T001 Initialize Vite + TypeScript + React project at repository root: create
   `package.json`, `tsconfig.json`, `vite.config.ts` with React plugin and path aliases
-- [ ] T002 [P] Install and configure Tailwind CSS: create `tailwind.config.ts` and
+- [x] T002 [P] Install and configure Tailwind CSS: create `tailwind.config.ts` and
   `src/styles/globals.css` with design system tokens from research.md §5 as CSS
   custom properties
-- [ ] T003 [P] Configure Vitest for unit and contract tests: add `vitest.config.ts`
+- [x] T003 [P] Configure Vitest for unit and contract tests: add `vitest.config.ts`
   referencing `tests/unit/` and `tests/contract/` directories
-- [ ] T004 [P] Configure Playwright for integration tests: create
+- [x] T004 [P] Configure Playwright for integration tests: create
   `playwright.config.ts` targeting `http://localhost:5173` with Chromium, Firefox,
   and Safari
-- [ ] T005 [P] Create `index.html` at repository root with Noto Sans KR Google Fonts
+- [x] T005 [P] Create `index.html` at repository root with Noto Sans KR Google Fonts
   preconnect headers and `<div id="root">` React mount point
-- [ ] T006 [P] Install all npm dependencies: React 18, React Flow 11+, TypeScript 5,
+- [x] T006 [P] Install all npm dependencies: React 18, React Flow 11+, TypeScript 5,
   Tailwind CSS, Vitest, React Testing Library, Playwright, and axe-core (a11y)
 
 **Checkpoint**: `npm install` succeeds; `npm run dev`, `npm run test`, and
@@ -56,32 +56,32 @@ all user stories depend on. No user story work can begin until this phase is com
 
 **⚠️ CRITICAL**: No user story implementation can begin until T007–T016 are complete.
 
-- [ ] T007 [P] Define `FamilyMember` interface and related types in
+- [x] T007 [P] Define `FamilyMember` interface and related types in
   `src/types/family-member.ts` (gender, generation, lineageSide, ageOrder, roleLabel
   per contracts/ui-contracts.md)
-- [ ] T008 [P] Define `KinshipTerm` interface and `speechRegister` type in
+- [x] T008 [P] Define `KinshipTerm` interface and `speechRegister` type in
   `src/types/kinship-term.ts`
-- [ ] T009 [P] Define `RelationshipType` enum (28 values), `RelationshipKey` type,
+- [x] T009 [P] Define `RelationshipType` enum (28 values), `RelationshipKey` type,
   and `RelationshipMapping` type in `src/types/relationship.ts` (all values from
   contracts/ui-contracts.md)
-- [ ] T010 Write failing unit tests for `deriveRelationshipType()` in
+- [x] T010 Write failing unit tests for `deriveRelationshipType()` in
   `tests/unit/term-lookup.test.ts` — one test per RelationshipType enum value; verify
   all tests FAIL before proceeding to T011 ⚠️ TDD RED
-- [ ] T011 Implement `deriveRelationshipType(speaker, target): RelationshipType` pure
+- [x] T011 Implement `deriveRelationshipType(speaker, target): RelationshipType` pure
   function in `src/utils/term-lookup.ts` until all T010 tests pass ⚠️ TDD GREEN
-- [ ] T012 Write failing `lookupTerm()` unit tests in `tests/unit/term-lookup.test.ts`
+- [x] T012 Write failing `lookupTerm()` unit tests in `tests/unit/term-lookup.test.ts`
   — one parametric assertion per expected mapping entry (e.g., "male speaker calling
   OLDER_SISTER returns 누나"); verify FAIL before T015 ⚠️ TDD RED
-- [ ] T013 [P] Write failing contract tests for `KinshipTerm` field compliance in
+- [x] T013 [P] Write failing contract tests for `KinshipTerm` field compliance in
   `tests/contract/kinship-data.test.ts` — assert every term has non-empty `hangul`,
   `romanization`, `englishGloss`, and literal `"존댓말"` register ⚠️ TDD RED
-- [ ] T014 Create canonical 24-node `FamilyMember` array in `src/data/family-tree.ts`
+- [x] T014 Create canonical 24-node `FamilyMember` array in `src/data/family-tree.ts`
   — all nodes from research.md §8 with `id`, `gender`, `generation`, `lineageSide`,
   `ageOrder`, and `roleLabel` populated
-- [ ] T015 Implement `lookupTerm(speaker, target, mapping): KinshipTerm | "SELF"`
+- [x] T015 Implement `lookupTerm(speaker, target, mapping): KinshipTerm | "SELF"`
   pure function in `src/utils/term-lookup.ts` (returns `"SELF"` when
   `speaker.id === target.id`)
-- [ ] T016 Populate `RelationshipMapping` in `src/data/kinship-terms.ts` — all
+- [x] T016 Populate `RelationshipMapping` in `src/data/kinship-terms.ts` — all
   ~80–120 entries covering every `(speakerGender, RelationshipType)` combination,
   verified against 국립국어원 표준국어대사전 (address form/호칭); all T012 and T013
   tests MUST pass after this task ⚠️ TDD GREEN
@@ -116,25 +116,25 @@ ego, which is 손자 for a male ego).
 
 ### Implementation for User Story 1
 
-- [ ] T018 [P] [US1] Implement `FamilyNode` React component in
+- [x] T018 [P] [US1] Implement `FamilyNode` React component in
   `src/components/FamilyNode/FamilyNode.tsx`: accepts `member`, `term`, `isSelected`,
   `onSelect` props; renders Hangul term as primary label (16px) and romanization as
   secondary label (11px); when `isSelected` displays "나 (Na)" instead; applies
   selected border/background from design tokens; implements `role="button"`,
   `tabIndex={0}`, keyboard activation (Enter/Space calls `onSelect`), and
   `aria-label` with role + term + English gloss
-- [ ] T019 [P] [US1] Implement `KinshipTree` component skeleton in
+- [x] T019 [P] [US1] Implement `KinshipTree` component skeleton in
   `src/components/KinshipTree/KinshipTree.tsx`: wraps React Flow `<ReactFlow>` with
   `FamilyNode` registered as a custom node type; accepts `nodes`, `edges`, and
   `onNodeClick` as props; enables pan and zoom controls; sets canvas background to
   `--color-surface`
-- [ ] T020 [US1] Implement `App` component in `src/App.tsx`: initialize
+- [x] T020 [US1] Implement `App` component in `src/App.tsx`: initialize
   `SpeakerPerspective` state to `{ memberId: "ego", gender: "male" }` using
   `useState`; implement `handleSpeakerSelect(memberId)` that updates perspective;
   compute the term for every node by calling `lookupTerm(speaker, target, mapping)`
   for each member; pass computed terms and `isSelected` flags as props to
   `KinshipTree`
-- [ ] T021 [US1] Wire `src/main.tsx` entry point: render `<App>` into `#root`, wrap
+- [x] T021 [US1] Wire `src/main.tsx` entry point: render `<App>` into `#root`, wrap
   with React Flow `<ReactFlowProvider>`, and apply Tailwind base styles via
   `src/styles/globals.css`
 
@@ -167,15 +167,15 @@ and the core three-generation view fits in a 1280×800 viewport.
 
 ### Implementation for User Story 2
 
-- [ ] T023 [P] [US2] Add structural `roleLabel` display to `FamilyNode` component in
+- [x] T023 [P] [US2] Add structural `roleLabel` display to `FamilyNode` component in
   `src/components/FamilyNode/FamilyNode.tsx`: render `member.roleLabel` in 10px
   secondary color (`--color-text-secondary`) above the Hangul term label
-- [ ] T024 [P] [US2] Define custom edge types in
+- [x] T024 [P] [US2] Define custom edge types in
   `src/components/KinshipTree/edges.ts`: parent-child edges (1.5px solid
   `--color-edge-default`), sibling edges (1.5px dotted `--color-edge-default`),
   marriage edges (1.5px dashed `--color-edge-marriage`); register all three in the
   React Flow `edgeTypes` map
-- [ ] T025 [US2] Define all 24 node positions and all edges in
+- [x] T025 [US2] Define all 24 node positions and all edges in
   `src/components/KinshipTree/KinshipTree.tsx`: position nodes in four horizontal
   bands by generation (-2 at top, +1 at bottom); paternal subtree left-of-center,
   maternal subtree right-of-center; ego generation centered; all 24 nodes and their
@@ -208,13 +208,13 @@ Dismissing it (Escape or click-outside) closes the panel cleanly.
 
 ### Implementation for User Story 3
 
-- [ ] T027 [P] [US3] Implement `TermDetail` component in
+- [x] T027 [P] [US3] Implement `TermDetail` component in
   `src/components/TermDetail/TermDetail.tsx`: accepts `term: KinshipTerm`,
   `isVisible: boolean`, `anchorId: string`; renders Hangul (bold, 16px), romanization
   (11px), English gloss, and `usageNote` section (only when non-null); sets
   `role="tooltip"`; positioned relative to trigger node; dismisses on Escape key and
   click-outside (document `mousedown` listener)
-- [ ] T028 [US3] Wire `TermDetail` into `FamilyNode` in
+- [x] T028 [US3] Wire `TermDetail` into `FamilyNode` in
   `src/components/FamilyNode/FamilyNode.tsx`: manage `isDetailVisible` local state;
   toggle on hover (`onMouseEnter`/`onMouseLeave`) and on click; render `<TermDetail>`
   passing the node's current `term` prop; add `aria-describedby` on the node element
