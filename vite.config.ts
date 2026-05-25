@@ -4,7 +4,6 @@ import { resolve } from 'path'
 
 // Production bundle target: < 500KB gzipped
 export default defineConfig({
-  base: '/gajok/',
   plugins: [react()],
   resolve: {
     alias: {
