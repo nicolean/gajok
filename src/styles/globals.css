@@ -1,0 +1,29 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-bg: #ffffff;
+  --color-surface: #f9fafb;
+  --color-node-bg: #ffffff;
+  --color-node-border: #e5e7eb;
+  --color-node-selected: #3b82f6;
+  --color-node-selected-bg: #eff6ff;
+  --color-text-primary: #111827;
+  --color-text-secondary: #6b7280;
+  --color-edge-default: #9ca3af;
+  --color-edge-marriage: #d1d5db;
+  --border-radius-node: 8px;
+  --font-family-korean: 'Noto Sans KR', sans-serif;
+}
+
+* {
+  font-family: var(--font-family-korean);
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background-color: var(--color-bg);
+  color: var(--color-text-primary);
+}
