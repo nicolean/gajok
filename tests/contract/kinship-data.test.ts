@@ -64,7 +64,7 @@ describe('FamilyMember data integrity', () => {
     for (const m of gen0) {
       if (m.id === 'ego' || m.id === 'spouse') {
         expect(m.ageOrder).toBe('n/a')
-      } else if (m.lineageSide === 'ego') {
+      } else if (m.lineageSide === 'self') {
         expect(['older', 'younger']).toContain(m.ageOrder)
       }
     }

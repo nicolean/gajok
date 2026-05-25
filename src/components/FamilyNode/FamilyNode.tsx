@@ -1,100 +1,75 @@
-import { useState, useCallback, useRef, useEffect } from 'react'
 import type { KinshipTerm } from '@/types/kinship-term'
 import { SELF_TERM } from '@/types/kinship-term'
 import type { FamilyMember } from '@/types/family-member'
-import { TermDetail } from '@/components/TermDetail/TermDetail'
 
 interface FamilyNodeProps {
   member: FamilyMember
   term: KinshipTerm | typeof SELF_TERM
   isSelected: boolean
-  onSelect: () => void
 }
 
-export function FamilyNode({ member, term, isSelected, onSelect }: FamilyNodeProps) {
-  const [isDetailVisible, setIsDetailVisible] = useState(false)
-  const nodeRef = useRef<HTMLDivElement>(null)
-  const isSelf = isSelected
+const BASE_CARD: React.CSSProperties = {
+  width: 108,
+  height: 80,
+  padding: '5px 10px',
+  borderRadius: 8,
+  cursor: 'pointer',
+  userSelect: 'none',
+  textAlign: 'center',
+  overflow: 'hidden',
+  boxSizing: 'border-box',
+}
 
-  const handleKeyDown = useCallback(
-    (e: React.KeyboardEvent) => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault()
-        onSelect()
-      }
-    },
-    [onSelect]
-  )
+export function FamilyNode({ member, term, isSelected }: FamilyNodeProps) {
+  const displayTerm = isSelected ? SELF_TERM : term
 
-  const handleTermClick = useCallback((e: React.MouseEvent) => {
-    e.stopPropagation()
-    setIsDetailVisible((v) => !v)
-  }, [])
-
-  useEffect(() => {
-    if (!isDetailVisible) return
-    const handleClickOutside = (e: MouseEvent) => {
-      if (nodeRef.current && !nodeRef.current.contains(e.target as Node)) {
-        setIsDetailVisible(false)
-      }
-    }
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [isDetailVisible])
-
-  const displayTerm = isSelf ? SELF_TERM : term
-  const ariaLabel = isSelf
-    ? `${member.roleLabel}: 나 (you / self)`
-    : `${member.roleLabel}: ${displayTerm.hangul} — ${displayTerm.englishGloss}`
+  const cardStyle: React.CSSProperties = isSelected
+    ? { ...BASE_CARD, border: '2px solid #2563EB', background: '#DBEAFE', boxShadow: '0 0 0 3px rgba(37,99,235,0.20)' }
+    : { ...BASE_CARD, border: '2px solid #9CA3AF', background: '#FFFFFF' }
 
   return (
-    <div ref={nodeRef} className="relative">
-      <div
-        role="button"
-        tabIndex={0}
-        aria-pressed={isSelected}
-        aria-label={ariaLabel}
-        onClick={onSelect}
-        onKeyDown={handleKeyDown}
-        className={[
-          'flex flex-col items-center gap-0.5 px-3 py-2 rounded-node border cursor-pointer select-none',
-          'transition-colors duration-100 min-w-[90px]',
-          isSelected
-            ? 'border-[2px] border-node-selected bg-node-selected-bg'
-            : 'border border-node-border bg-white hover:border-gray-300',
-        ].join(' ')}
-      >
-        <span className="text-[10px] text-[var(--color-text-secondary)] leading-none">
-          {member.roleLabel}
-        </span>
-
-        <span
-          id={`term-${member.id}`}
-          className="text-[16px] font-bold text-[var(--color-text-primary)] leading-tight cursor-pointer"
-          onClick={handleTermClick}
-          onMouseEnter={() => !isSelf && setIsDetailVisible(true)}
-          onMouseLeave={() => setIsDetailVisible(false)}
-        >
-          {isSelf ? '나' : displayTerm.hangul}
-        </span>
-
-        {!isSelf && (
-          <span className="text-[11px] text-[var(--color-text-secondary)] leading-none">
-            {displayTerm.romanization}
-          </span>
-        )}
-
-        {isSelf && (
-          <span className="text-[11px] text-[var(--color-text-secondary)] leading-none">na</span>
-        )}
+    <div
+      role="button"
+      tabIndex={0}
+      aria-pressed={isSelected}
+      aria-label={`${member.roleLabel}: ${displayTerm.hangul} — ${displayTerm.englishGloss}`}
+      style={cardStyle}
+    >
+      {/* role label: clamped to 2 lines so height is always the same */}
+      <div style={{
+        fontSize: 10,
+        color: '#6B7280',
+        lineHeight: 1.25,
+        height: 25,
+        overflow: 'hidden',
+        display: '-webkit-box',
+        WebkitLineClamp: 2,
+        WebkitBoxOrient: 'vertical',
+      }}>
+        {member.roleLabel}
       </div>
 
-      {isDetailVisible && !isSelf && (
-        <TermDetail
-          term={term as KinshipTerm}
-          anchorId={`term-${member.id}`}
-        />
-      )}
+      {/* hangul term: nowrap prevents 5-char terms from wrapping when speaker switches */}
+      <div style={{
+        fontSize: 16,
+        fontWeight: 700,
+        color: isSelected ? '#1D4ED8' : '#111827',
+        lineHeight: 1.3,
+        whiteSpace: 'nowrap',
+        overflow: 'hidden',
+      }}>
+        {displayTerm.hangul}
+      </div>
+
+      <div style={{
+        fontSize: 11,
+        color: '#6B7280',
+        lineHeight: 1.3,
+        whiteSpace: 'nowrap',
+        overflow: 'hidden',
+      }}>
+        {isSelected ? 'na' : displayTerm.romanization}
+      </div>
     </div>
   )
 }

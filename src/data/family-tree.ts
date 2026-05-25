@@ -16,22 +16,22 @@ export const FAMILY_MEMBERS: FamilyMember[] = [
   { id: 'matAunt',   gender: 'female', generation: -1, lineageSide: 'maternal', ageOrder: 'n/a', roleLabel: "Mother's Sister" },
 
   // Generation 0: Ego's generation
-  { id: 'patCousinM', gender: 'male',   generation: 0, lineageSide: 'paternal', ageOrder: 'older',   roleLabel: 'Paternal Male Cousin (older)' },
-  { id: 'patCousinF', gender: 'female', generation: 0, lineageSide: 'paternal', ageOrder: 'older',   roleLabel: 'Paternal Female Cousin (older)' },
-  { id: 'olderBro',   gender: 'male',   generation: 0, lineageSide: 'ego',      ageOrder: 'older',   roleLabel: 'Older Brother' },
-  { id: 'olderSis',   gender: 'female', generation: 0, lineageSide: 'ego',      ageOrder: 'older',   roleLabel: 'Older Sister' },
-  { id: 'ego',        gender: 'male',   generation: 0, lineageSide: 'ego',      ageOrder: 'n/a',     roleLabel: 'You (Ego)' },
+  { id: 'patCousinM', gender: 'male',   generation: 0, lineageSide: 'paternal', ageOrder: 'older',   roleLabel: 'Older Paternal Male Cousin' },
+  { id: 'patCousinF', gender: 'female', generation: 0, lineageSide: 'paternal', ageOrder: 'older',   roleLabel: 'Older Paternal Female Cousin' },
+  { id: 'olderBro',   gender: 'male',   generation: 0, lineageSide: 'self',      ageOrder: 'older',   roleLabel: 'Older Brother' },
+  { id: 'olderSis',   gender: 'female', generation: 0, lineageSide: 'self',      ageOrder: 'older',   roleLabel: 'Older Sister' },
+  { id: 'ego',        gender: 'male',   generation: 0, lineageSide: 'self',      ageOrder: 'n/a',     roleLabel: '자신 (Self)' },
   { id: 'spouse',     gender: 'female', generation: 0, lineageSide: 'spouse',   ageOrder: 'n/a',     roleLabel: 'Spouse (Wife)' },
-  { id: 'youngerBro', gender: 'male',   generation: 0, lineageSide: 'ego',      ageOrder: 'younger', roleLabel: 'Younger Brother' },
-  { id: 'youngerSis', gender: 'female', generation: 0, lineageSide: 'ego',      ageOrder: 'younger', roleLabel: 'Younger Sister' },
-  { id: 'matCousinM', gender: 'male',   generation: 0, lineageSide: 'maternal', ageOrder: 'older',   roleLabel: 'Maternal Male Cousin (older)' },
-  { id: 'matCousinF', gender: 'female', generation: 0, lineageSide: 'maternal', ageOrder: 'older',   roleLabel: 'Maternal Female Cousin (older)' },
+  { id: 'youngerBro', gender: 'male',   generation: 0, lineageSide: 'self',      ageOrder: 'younger', roleLabel: 'Younger Brother' },
+  { id: 'youngerSis', gender: 'female', generation: 0, lineageSide: 'self',      ageOrder: 'younger', roleLabel: 'Younger Sister' },
+  { id: 'matCousinM', gender: 'male',   generation: 0, lineageSide: 'maternal', ageOrder: 'older',   roleLabel: 'Older Maternal Male Cousin' },
+  { id: 'matCousinF', gender: 'female', generation: 0, lineageSide: 'maternal', ageOrder: 'older',   roleLabel: 'Older Maternal Female Cousin' },
 
   // Generation +1: Children and nieces/nephews
-  { id: 'son',      gender: 'male',   generation: 1, lineageSide: 'ego', ageOrder: 'n/a', roleLabel: 'Son' },
-  { id: 'daughter', gender: 'female', generation: 1, lineageSide: 'ego', ageOrder: 'n/a', roleLabel: 'Daughter' },
-  { id: 'nephew',   gender: 'male',   generation: 1, lineageSide: 'ego', ageOrder: 'n/a', roleLabel: "Brother's Son" },
-  { id: 'niece',    gender: 'female', generation: 1, lineageSide: 'ego', ageOrder: 'n/a', roleLabel: "Sister's Daughter" },
+  { id: 'son',      gender: 'male',   generation: 1, lineageSide: 'self', ageOrder: 'n/a', roleLabel: 'Son' },
+  { id: 'daughter', gender: 'female', generation: 1, lineageSide: 'self', ageOrder: 'n/a', roleLabel: 'Daughter' },
+  { id: 'nephew',   gender: 'male',   generation: 1, lineageSide: 'self', ageOrder: 'n/a', roleLabel: "Brother's Son" },
+  { id: 'niece',    gender: 'female', generation: 1, lineageSide: 'self', ageOrder: 'n/a', roleLabel: "Sister's Daughter" },
 ]
 
 export const FAMILY_MEMBER_MAP = new Map(FAMILY_MEMBERS.map((m) => [m.id, m]))

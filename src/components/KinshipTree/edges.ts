@@ -8,6 +8,8 @@ const parentChild = (id: string, source: string, target: string): Edge => ({
   id,
   source,
   target,
+  sourceHandle: 'bottom',
+  targetHandle: 'top',
   type: 'smoothstep',
   style: { stroke: EDGE_COLOR, strokeWidth: 1.5 },
 })
@@ -16,15 +18,20 @@ const sibling = (id: string, source: string, target: string): Edge => ({
   id,
   source,
   target,
+  sourceHandle: 'right',
+  targetHandle: 'left',
   type: 'straight',
   style: { stroke: EDGE_COLOR, strokeWidth: 1.5, strokeDasharray: '4 3' },
 })
 
+// Marriage edges arch above the generation row (top-src → top) to avoid crossing intermediate nodes
 const marriage = (id: string, source: string, target: string): Edge => ({
   id,
   source,
   target,
-  type: 'straight',
+  sourceHandle: 'top-src',
+  targetHandle: 'top',
+  type: 'smoothstep',
   style: { stroke: MARRIAGE_COLOR, strokeWidth: 1.5, strokeDasharray: '8 4' },
 })
 
@@ -65,15 +72,15 @@ export const EDGES: Edge[] = [
   parentChild('e-olderBro-nephew', 'olderBro', 'nephew'),
   parentChild('e-olderSis-niece', 'olderSis', 'niece'),
 
-  // Marriage edges
+  // Marriage edges (horizontal: right handle → left handle)
   marriage('e-m-grandparents-pat', 'patGrandpa', 'patGrandma'),
   marriage('e-m-grandparents-mat', 'matGrandpa', 'matGrandma'),
   marriage('e-m-parents', 'father', 'mother'),
   marriage('e-m-ego-spouse', 'ego', 'spouse'),
 
-  // Sibling edges (ego generation)
-  sibling('e-s-olderBro-ego', 'olderBro', 'ego'),
+  // Sibling edges — adjacent chain (right → left) so no line crosses a sibling node
+  sibling('e-s-olderBro-olderSis', 'olderBro', 'olderSis'),
   sibling('e-s-olderSis-ego', 'olderSis', 'ego'),
   sibling('e-s-ego-youngerBro', 'ego', 'youngerBro'),
-  sibling('e-s-ego-youngerSis', 'ego', 'youngerSis'),
+  sibling('e-s-youngerBro-youngerSis', 'youngerBro', 'youngerSis'),
 ]

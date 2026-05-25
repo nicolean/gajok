@@ -50,7 +50,7 @@ export function deriveRelationshipType(
 
     const targetIsOlder = isOlderThan(target, speaker)
 
-    if (target.lineageSide === 'ego') {
+    if (target.lineageSide === 'self') {
       return targetIsOlder
         ? target.gender === 'male' ? RelationshipType.OLDER_BROTHER : RelationshipType.OLDER_SISTER
         : target.gender === 'male' ? RelationshipType.YOUNGER_BROTHER : RelationshipType.YOUNGER_SISTER
