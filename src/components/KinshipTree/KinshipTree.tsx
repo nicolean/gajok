@@ -34,23 +34,24 @@ const NODE_POSITIONS: Record<string, { x: number; y: number }> = {
   matAunt:     { x: 1192, y: 160 },
 
   // Generation 0: siblings/ego/spouse at y=300, cousins offset to y=375
-  // Two visual tiers show that cousins are the same generation but a different branch
+  // Older/younger siblings are pushed outward 64px to create an 84px gap on each
+  // side of the ego+spouse couple, visually grouping them as a married pair.
   patCousinM:  { x: 0,    y: 375 },
   patCousinF:  { x: 128,  y: 375 },
-  olderBro:    { x: 276,  y: 300 },
-  olderSis:    { x: 404,  y: 300 },
+  olderBro:    { x: 212,  y: 300 },
+  olderSis:    { x: 340,  y: 300 },
   ego:         { x: 532,  y: 300 },
   spouse:      { x: 660,  y: 300 },
-  youngerBro:  { x: 788,  y: 300 },
-  youngerSis:  { x: 916,  y: 300 },
-  matCousinM:  { x: 1064, y: 375 },
-  matCousinF:  { x: 1192, y: 375 },
+  youngerBro:  { x: 852,  y: 300 },
+  youngerSis:  { x: 980,  y: 300 },
+  matCousinM:  { x: 1128, y: 375 },
+  matCousinF:  { x: 1256, y: 375 },
 
   // Generation +1 (y=480)
-  nephew:      { x: 280,  y: 480 },
+  nephew:      { x: 212,  y: 480 },
   son:         { x: 480,  y: 480 },
   daughter:    { x: 610,  y: 480 },
-  niece:       { x: 830,  y: 480 },
+  niece:       { x: 894,  y: 480 },
 }
 
 const HANDLE_STYLE: React.CSSProperties = { visibility: 'hidden' }
