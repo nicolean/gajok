@@ -86,9 +86,67 @@ describe('deriveRelationshipType', () => {
   })
 
   // Paternal grandfather's perspective
-  it('patGrandpa → ego = GRANDSON (SON)', () => {
-    // From grandfather's view, ego is his grandson — maps via generation difference
-    expect(deriveRelationshipType(m('patGrandpa'), m('ego'))).toBe(RelationshipType.SON)
+  it('patGrandpa → ego = GRANDSON', () => {
+    expect(deriveRelationshipType(m('patGrandpa'), m('ego'))).toBe(RelationshipType.GRANDSON)
+  })
+  it('patGrandpa → olderSis = GRANDDAUGHTER', () => {
+    // patGrandpa (gen-2) → olderSis (gen0): genDiff = +2
+    expect(deriveRelationshipType(m('patGrandpa'), m('olderSis'))).toBe(RelationshipType.GRANDDAUGHTER)
+  })
+  it('patGrandpa → son = GREAT_GRANDSON', () => {
+    // patGrandpa (gen-2) → son (gen+1): genDiff = +3
+    expect(deriveRelationshipType(m('patGrandpa'), m('son'))).toBe(RelationshipType.GREAT_GRANDSON)
+  })
+  it('patGrandpa → daughter = GREAT_GRANDDAUGHTER', () => {
+    expect(deriveRelationshipType(m('patGrandpa'), m('daughter'))).toBe(RelationshipType.GREAT_GRANDDAUGHTER)
+  })
+  it('father → son = GRANDSON', () => {
+    // father (gen-1) → son (gen+1): genDiff = +2
+    expect(deriveRelationshipType(m('father'), m('son'))).toBe(RelationshipType.GRANDSON)
+  })
+  it('son → patGrandpa = PATERNAL_GREAT_GRANDFATHER', () => {
+    // son (gen+1) → patGrandpa (gen-2): genDiff = -3
+    expect(deriveRelationshipType(m('son'), m('patGrandpa'))).toBe(RelationshipType.PATERNAL_GREAT_GRANDFATHER)
+  })
+  it('son → patGrandma = PATERNAL_GREAT_GRANDMOTHER', () => {
+    expect(deriveRelationshipType(m('son'), m('patGrandma'))).toBe(RelationshipType.PATERNAL_GREAT_GRANDMOTHER)
+  })
+  it('son → matGrandpa = MATERNAL_GREAT_GRANDFATHER', () => {
+    expect(deriveRelationshipType(m('son'), m('matGrandpa'))).toBe(RelationshipType.MATERNAL_GREAT_GRANDFATHER)
+  })
+  it('son → matGrandma = MATERNAL_GREAT_GRANDMOTHER', () => {
+    expect(deriveRelationshipType(m('son'), m('matGrandma'))).toBe(RelationshipType.MATERNAL_GREAT_GRANDMOTHER)
+  })
+  it('son → father = PATERNAL_GRANDFATHER', () => {
+    // son (gen+1) → father (gen-1): paternal grandfather
+    expect(deriveRelationshipType(m('son'), m('father'))).toBe(RelationshipType.PATERNAL_GRANDFATHER)
+  })
+  it('son → mother = PATERNAL_GRANDMOTHER', () => {
+    // mother has lineageSide maternal but is son's paternal grandmother
+    expect(deriveRelationshipType(m('son'), m('mother'))).toBe(RelationshipType.PATERNAL_GRANDMOTHER)
+  })
+  it('son → ego = FATHER', () => {
+    expect(deriveRelationshipType(m('son'), m('ego'))).toBe(RelationshipType.FATHER)
+  })
+  it('son → spouse = MOTHER', () => {
+    expect(deriveRelationshipType(m('son'), m('spouse'))).toBe(RelationshipType.MOTHER)
+  })
+  it('nephew → olderBro = FATHER', () => {
+    expect(deriveRelationshipType(m('nephew'), m('olderBro'))).toBe(RelationshipType.FATHER)
+  })
+  it('nephew → ego = PATERNAL_UNCLE', () => {
+    // ego is nephew's paternal uncle (ego is olderBro's younger sibling)
+    expect(deriveRelationshipType(m('nephew'), m('ego'))).toBe(RelationshipType.PATERNAL_UNCLE)
+  })
+  it('father → olderBro = SON', () => {
+    // father is olderBro's parent — should return SON, not NEPHEW
+    expect(deriveRelationshipType(m('father'), m('olderBro'))).toBe(RelationshipType.SON)
+  })
+  it('father → ego = SON', () => {
+    expect(deriveRelationshipType(m('father'), m('ego'))).toBe(RelationshipType.SON)
+  })
+  it('patUncle → patCousinM = SON', () => {
+    expect(deriveRelationshipType(m('patUncle'), m('patCousinM'))).toBe(RelationshipType.SON)
   })
 })
 
@@ -129,6 +187,66 @@ describe('lookupTerm — gender-dependent terms', () => {
     expect(term).not.toBe(SELF_TERM)
     if (term === SELF_TERM) return
     expect(term.hangul).toBe('오빠')
+  })
+})
+
+// ─── lookupTerm — multi-generation terms ─────────────────────────────────────
+
+describe('lookupTerm — multi-generation', () => {
+  it('patGrandpa calls ego 손자', () => {
+    const term = lookupTerm(m('patGrandpa'), m('ego'), KINSHIP_TERMS)
+    expect(term).not.toBe(SELF_TERM)
+    if (term === SELF_TERM) return
+    expect(term.hangul).toBe('손자')
+  })
+  it('patGrandma calls olderSis 손녀', () => {
+    // patGrandma (gen-2) → olderSis (gen0): granddaughter
+    const term = lookupTerm(m('patGrandma'), m('olderSis'), KINSHIP_TERMS)
+    expect(term).not.toBe(SELF_TERM)
+    if (term === SELF_TERM) return
+    expect(term.hangul).toBe('손녀')
+  })
+  it('patGrandpa calls son 증손자', () => {
+    const term = lookupTerm(m('patGrandpa'), m('son'), KINSHIP_TERMS)
+    expect(term).not.toBe(SELF_TERM)
+    if (term === SELF_TERM) return
+    expect(term.hangul).toBe('증손자')
+  })
+  it('son calls patGrandpa 증조할아버지', () => {
+    const term = lookupTerm(m('son'), m('patGrandpa'), KINSHIP_TERMS)
+    expect(term).not.toBe(SELF_TERM)
+    if (term === SELF_TERM) return
+    expect(term.hangul).toBe('증조할아버지')
+  })
+  it('son calls matGrandpa 외증조할아버지', () => {
+    const term = lookupTerm(m('son'), m('matGrandpa'), KINSHIP_TERMS)
+    expect(term).not.toBe(SELF_TERM)
+    if (term === SELF_TERM) return
+    expect(term.hangul).toBe('외증조할아버지')
+  })
+  it('son calls father 할아버지', () => {
+    const term = lookupTerm(m('son'), m('father'), KINSHIP_TERMS)
+    expect(term).not.toBe(SELF_TERM)
+    if (term === SELF_TERM) return
+    expect(term.hangul).toBe('할아버지')
+  })
+  it('son calls mother 할머니 (not 외할머니)', () => {
+    const term = lookupTerm(m('son'), m('mother'), KINSHIP_TERMS)
+    expect(term).not.toBe(SELF_TERM)
+    if (term === SELF_TERM) return
+    expect(term.hangul).toBe('할머니')
+  })
+  it('son calls ego 아버지', () => {
+    const term = lookupTerm(m('son'), m('ego'), KINSHIP_TERMS)
+    expect(term).not.toBe(SELF_TERM)
+    if (term === SELF_TERM) return
+    expect(term.hangul).toBe('아버지')
+  })
+  it('son calls spouse 어머니', () => {
+    const term = lookupTerm(m('son'), m('spouse'), KINSHIP_TERMS)
+    expect(term).not.toBe(SELF_TERM)
+    if (term === SELF_TERM) return
+    expect(term.hangul).toBe('어머니')
   })
 })
 

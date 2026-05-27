@@ -5,8 +5,27 @@ import { RelationshipType } from '@/types/relationship'
 import type { RelationshipMapping } from '@/types/relationship'
 import { FAMILY_MEMBERS } from '@/data/family-tree'
 
-// Canonical IDs of ego's direct children
-const DIRECT_CHILD_IDS = new Set(['son', 'daughter'])
+// Actual parent-child edges in the family tree (mirrors edges.ts)
+const PARENT_CHILD_MAP: Map<string, ReadonlySet<string>> = new Map([
+  ['patGrandpa', new Set(['father', 'patUncle', 'patAunt'])],
+  ['patGrandma', new Set(['father', 'patUncle', 'patAunt'])],
+  ['matGrandpa', new Set(['mother', 'matUncle', 'matAunt'])],
+  ['matGrandma', new Set(['mother', 'matUncle', 'matAunt'])],
+  ['father',     new Set(['ego', 'olderBro', 'olderSis', 'youngerBro', 'youngerSis'])],
+  ['mother',     new Set(['ego', 'olderBro', 'olderSis', 'youngerBro', 'youngerSis'])],
+  ['patUncle',   new Set(['patCousinM'])],
+  ['patAunt',    new Set(['patCousinF'])],
+  ['matUncle',   new Set(['matCousinM'])],
+  ['matAunt',    new Set(['matCousinF'])],
+  ['ego',        new Set(['son', 'daughter'])],
+  ['spouse',     new Set(['son', 'daughter'])],
+  ['olderBro',   new Set(['nephew'])],
+  ['olderSis',   new Set(['niece'])],
+])
+
+function isParentOf(parent: FamilyMember, child: FamilyMember): boolean {
+  return PARENT_CHILD_MAP.get(parent.id)?.has(child.id) ?? false
+}
 
 // Birth-order index from canonical array position (lower index = older)
 const BIRTH_ORDER = new Map(FAMILY_MEMBERS.map((m, i) => [m.id, i]))
@@ -17,34 +36,36 @@ export function deriveRelationshipType(
 ): RelationshipType {
   const genDiff = target.generation - speaker.generation
 
-  // Target is grandparent-level relative to speaker (genDiff <= -2)
-  if (genDiff <= -2) {
-    const side = resolveLineageSide(target, speaker)
-    if (side === 'paternal') {
-      return target.gender === 'male'
-        ? RelationshipType.PATERNAL_GRANDFATHER
-        : RelationshipType.PATERNAL_GRANDMOTHER
-    }
-    return target.gender === 'male'
-      ? RelationshipType.MATERNAL_GRANDFATHER
-      : RelationshipType.MATERNAL_GRANDMOTHER
+  // Target is great-grandparent or beyond
+  if (genDiff <= -3) {
+    return target.lineageSide === 'paternal'
+      ? (target.gender === 'male' ? RelationshipType.PATERNAL_GREAT_GRANDFATHER : RelationshipType.PATERNAL_GREAT_GRANDMOTHER)
+      : (target.gender === 'male' ? RelationshipType.MATERNAL_GREAT_GRANDFATHER : RelationshipType.MATERNAL_GREAT_GRANDMOTHER)
   }
 
-  // Target is parent/uncle/aunt level (genDiff === -1)
+  // Target is grandparent level
+  if (genDiff === -2) {
+    // For gen+1 speakers, all gen-1 members are on their paternal side (since only
+    // ego's family appears in the tree — spouse's parents are absent)
+    const side = speaker.generation === 1 ? 'paternal' : target.lineageSide
+    return side === 'paternal'
+      ? (target.gender === 'male' ? RelationshipType.PATERNAL_GRANDFATHER : RelationshipType.PATERNAL_GRANDMOTHER)
+      : (target.gender === 'male' ? RelationshipType.MATERNAL_GRANDFATHER : RelationshipType.MATERNAL_GRANDMOTHER)
+  }
+
+  // Target is parent/uncle/aunt level
   if (genDiff === -1) {
-    if (target.id === 'father') return RelationshipType.FATHER
-    if (target.id === 'mother') return RelationshipType.MOTHER
-    if (target.lineageSide === 'paternal') {
-      return target.gender === 'male'
-        ? RelationshipType.PATERNAL_UNCLE
-        : RelationshipType.PATERNAL_AUNT
+    if (isParentOf(target, speaker)) {
+      return target.gender === 'male' ? RelationshipType.FATHER : RelationshipType.MOTHER
     }
-    return target.gender === 'male'
-      ? RelationshipType.MATERNAL_UNCLE
-      : RelationshipType.MATERNAL_AUNT
+    // Collateral: lineageSide 'self' = ego's sibling = speaker's paternal uncle/aunt
+    if (target.lineageSide === 'paternal' || target.lineageSide === 'self') {
+      return target.gender === 'male' ? RelationshipType.PATERNAL_UNCLE : RelationshipType.PATERNAL_AUNT
+    }
+    return target.gender === 'male' ? RelationshipType.MATERNAL_UNCLE : RelationshipType.MATERNAL_AUNT
   }
 
-  // Same generation (genDiff === 0)
+  // Same generation
   if (genDiff === 0) {
     if (target.lineageSide === 'spouse') return RelationshipType.SPOUSE
 
@@ -69,23 +90,21 @@ export function deriveRelationshipType(
     return targetIsOlder ? RelationshipType.MATERNAL_COUSIN_FEMALE_OLDER : RelationshipType.MATERNAL_COUSIN_FEMALE_YOUNGER
   }
 
-  // Target is child/niece/nephew level (genDiff === 1)
+  // Target is child/niece/nephew level
   if (genDiff === 1) {
-    const isDirectChild = DIRECT_CHILD_IDS.has(target.id) ||
-      (speaker.id === 'spouse' && DIRECT_CHILD_IDS.has(target.id))
-    if (isDirectChild) {
+    if (isParentOf(speaker, target)) {
       return target.gender === 'male' ? RelationshipType.SON : RelationshipType.DAUGHTER
     }
     return target.gender === 'male' ? RelationshipType.NEPHEW : RelationshipType.NIECE
   }
 
-  // genDiff >= 2: target is grandchild level — speaker looks down 2+ generations
-  return target.gender === 'male' ? RelationshipType.SON : RelationshipType.DAUGHTER
-}
+  // Target is grandchild level
+  if (genDiff === 2) {
+    return target.gender === 'male' ? RelationshipType.GRANDSON : RelationshipType.GRANDDAUGHTER
+  }
 
-// Resolve which lineage side a target belongs to from a non-ego speaker's perspective
-function resolveLineageSide(target: FamilyMember, _speaker: FamilyMember) {
-  return target.lineageSide
+  // Target is great-grandchild or beyond
+  return target.gender === 'male' ? RelationshipType.GREAT_GRANDSON : RelationshipType.GREAT_GRANDDAUGHTER
 }
 
 // Target is older than speaker: compare ageOrder rank first, array index as tiebreaker
@@ -94,7 +113,6 @@ function isOlderThan(target: FamilyMember, speaker: FamilyMember): boolean {
   const tRank = RANK[target.ageOrder] ?? 1
   const sRank = RANK[speaker.ageOrder] ?? 1
   if (tRank !== sRank) return tRank < sRank
-  // Tiebreaker: canonical array position (lower index = born earlier)
   const tIdx = BIRTH_ORDER.get(target.id) ?? 999
   const sIdx = BIRTH_ORDER.get(speaker.id) ?? 999
   return tIdx < sIdx

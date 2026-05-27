@@ -35,7 +35,7 @@ export function FamilyNode({ member, term, isSelected }: FamilyNodeProps) {
       aria-label={`${member.roleLabel}: ${displayTerm.hangul} — ${displayTerm.englishGloss}`}
       style={cardStyle}
     >
-      {/* role label: clamped to 2 lines so height is always the same */}
+      {/* english gloss: updates with the speaker perspective, clamped to 2 lines */}
       <div style={{
         fontSize: 10,
         color: '#6B7280',
@@ -45,8 +45,9 @@ export function FamilyNode({ member, term, isSelected }: FamilyNodeProps) {
         display: '-webkit-box',
         WebkitLineClamp: 2,
         WebkitBoxOrient: 'vertical',
+        textTransform: 'capitalize',
       }}>
-        {member.roleLabel}
+        {displayTerm.englishGloss}
       </div>
 
       {/* hangul term: nowrap prevents 5-char terms from wrapping when speaker switches */}
